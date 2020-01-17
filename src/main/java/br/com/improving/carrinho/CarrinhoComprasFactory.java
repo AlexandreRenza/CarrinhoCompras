@@ -1,11 +1,18 @@
 package br.com.improving.carrinho;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Classe responsável pela criação e recuperação dos carrinhos de compras.
  */
 public class CarrinhoComprasFactory {
+
+    private Collection<CarrinhoCompras> carrinhosCompras = new ArrayList<>();
 
 	public CarrinhoComprasFactory() {
 	}
@@ -20,6 +27,20 @@ public class CarrinhoComprasFactory {
      */
     public CarrinhoCompras criar(String identificacaoCliente) {
 
+        Optional<CarrinhoCompras> carrinhoExiste = carrinhosCompras
+                .stream()
+                .filter(carrinhoCompras -> carrinhoCompras.getIdentificacaoCliente().equals(identificacaoCliente))
+                .findFirst();
+
+        if(carrinhoExiste.isPresent()){
+                return carrinhoExiste.get();
+            }
+        else
+            {
+                CarrinhoCompras novoCarrinho = new CarrinhoCompras(identificacaoCliente);
+                carrinhosCompras.add(novoCarrinho);
+                return novoCarrinho;
+            }
     }
 
     /**
@@ -33,6 +54,10 @@ public class CarrinhoComprasFactory {
      */
     public BigDecimal getValorTicketMedio() {
 
+        return BigDecimal.valueOf(carrinhosCompras.stream()
+                .mapToDouble(carrinhosCompras -> carrinhosCompras.getValorTotal().doubleValue())
+                .sum()).setScale(2, RoundingMode.HALF_EVEN);
+
     }
 
     /**
@@ -44,6 +69,10 @@ public class CarrinhoComprasFactory {
      * e false caso o cliente não possua um carrinho.
      */
     public boolean invalidar(String identificacaoCliente) {
+        return getCarrinhosCompras().removeIf(carrinhoCompras -> carrinhoCompras.getIdentificacaoCliente().equals(identificacaoCliente));
+    }
 
+    public Collection<CarrinhoCompras> getCarrinhosCompras() {
+        return carrinhosCompras;
     }
 }

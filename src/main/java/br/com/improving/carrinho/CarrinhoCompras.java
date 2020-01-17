@@ -2,12 +2,26 @@ package br.com.improving.carrinho;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Classe que representa o carrinho de compras de um cliente.
  */
 public class CarrinhoCompras {
+
+    private String identificacaoCliente;
+    private Collection<Item> itens;
+
+    public CarrinhoCompras(String identificacaoCliente, Collection<Item> itens) {
+        this.identificacaoCliente = identificacaoCliente;
+        this.itens = itens;
+    }
+
+    public CarrinhoCompras(String identificacaoCliente) {
+        this.identificacaoCliente = identificacaoCliente;
+    }
 
     /**
      * Permite a adição de um novo item no carrinho de compras.
@@ -25,6 +39,29 @@ public class CarrinhoCompras {
      */
     public void adicionarItem(Produto produto, BigDecimal valorUnitario, int quantidade) {
 
+        try{
+
+            Optional<Item> ItemExiste = getItens().stream()
+                    .filter(Items -> Items.getProduto().equals(produto))
+                    .findFirst();
+
+            Item item = ItemExiste.get();
+
+            if(ItemExiste.isPresent()){
+                somaQuantidadeItem(item, quantidade);
+                if(!(item.getValorUnitario()).equals(valorUnitario)){
+                    alteraValorItem(item, valorUnitario);
+                }
+            }
+            else{
+                Item novoItem = new Item(produto, valorUnitario, quantidade);
+                itens.add(novoItem);
+            }
+
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -36,9 +73,11 @@ public class CarrinhoCompras {
      */
     public boolean removerItem(Produto produto) {
 
+        return getItens().removeIf(item -> item.getProduto().equals(produto));
+
     }
 
-    /**
+     /**
      * Permite a remoção do item de acordo com a posição.
      * Essa posição deve ser determinada pela ordem de inclusão do produto na 
      * coleção, em que zero representa o primeiro item.
@@ -48,7 +87,8 @@ public class CarrinhoCompras {
      * caso o produto não exista no carrinho.
      */
     public boolean removerItem(int posicaoItem) {
-
+        ArrayList<Item> itens = (ArrayList<Item>) getItens();
+        return getItens().removeIf(item -> item.equals(itens.get(posicaoItem)));
     }
 
     /**
@@ -58,7 +98,7 @@ public class CarrinhoCompras {
      * @return BigDecimal
      */
     public BigDecimal getValorTotal() {
-
+        return BigDecimal.valueOf(getItens().stream().mapToDouble(item -> item.getValorTotal().doubleValue()).sum());
     }
 
     /**
@@ -67,6 +107,22 @@ public class CarrinhoCompras {
      * @return itens
      */
     public Collection<Item> getItens() {
-
+        return itens;
     }
+
+
+    public void somaQuantidadeItem(Item item, int quantidade){
+        item.somaQuantidadeItem(quantidade);
+    }
+
+    public void alteraValorItem(Item item, BigDecimal valorUnitario){
+        item.alteraValorItem(valorUnitario);
+    }
+
+    public String getIdentificacaoCliente(){
+        return this.identificacaoCliente;
+    }
+
+
+
 }

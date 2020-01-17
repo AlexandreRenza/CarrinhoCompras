@@ -20,7 +20,6 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showDeprecation>true</showDeprecation>
-
                 </configuration>
             </plugin>
         </plugins>
