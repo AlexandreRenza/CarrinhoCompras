@@ -21,6 +21,7 @@ public class CarrinhoCompras {
 
     public CarrinhoCompras(String identificacaoCliente) {
         this.identificacaoCliente = identificacaoCliente;
+        this.itens = new ArrayList<>();
     }
 
     /**
@@ -41,22 +42,20 @@ public class CarrinhoCompras {
 
         try{
 
-            Optional<Item> ItemExiste = getItens().stream()
-                    .filter(Items -> Items.getProduto().equals(produto))
-                    .findFirst();
+                Optional<Item> ItemExiste = Optional.ofNullable(getItens().stream()
+                        .filter(Items -> Items.getProduto().equals(produto))
+                        .findFirst().orElse(null));
 
-            Item item = ItemExiste.get();
-
-            if(ItemExiste.isPresent()){
-                somaQuantidadeItem(item, quantidade);
-                if(!(item.getValorUnitario()).equals(valorUnitario)){
-                    alteraValorItem(item, valorUnitario);
+                if (ItemExiste.isPresent()) {
+                    Item item = ItemExiste.get();
+                    somaQuantidadeItem(item, quantidade);
+                    if (!(item.getValorUnitario()).equals(valorUnitario)) {
+                        alteraValorItem(item, valorUnitario);
+                    }
+                } else {
+                    Item novoItem = new Item(produto, valorUnitario, quantidade);
+                    itens.add(novoItem);
                 }
-            }
-            else{
-                Item novoItem = new Item(produto, valorUnitario, quantidade);
-                itens.add(novoItem);
-            }
 
         }catch (RuntimeException e){
             e.printStackTrace();

@@ -61,7 +61,7 @@ public class Item {
     }
 
     public void somaQuantidadeItem(int quantidade){
-        this.quantidade =+ quantidade;
+        this.quantidade += quantidade;
     }
 
     public void alteraValorItem(BigDecimal valorUnitario){

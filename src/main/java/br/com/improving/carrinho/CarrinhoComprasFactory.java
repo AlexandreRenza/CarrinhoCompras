@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -55,8 +54,9 @@ public class CarrinhoComprasFactory {
     public BigDecimal getValorTicketMedio() {
 
         return BigDecimal.valueOf(carrinhosCompras.stream()
-                .mapToDouble(carrinhosCompras -> carrinhosCompras.getValorTotal().doubleValue())
-                .sum()).setScale(2, RoundingMode.HALF_EVEN);
+                .mapToDouble(carrinhosCompras -> carrinhosCompras.getValorTotal().doubleValue()).sum())
+                .divide(BigDecimal.valueOf(carrinhosCompras.stream().count()))
+                .setScale(2, RoundingMode.HALF_EVEN);
 
     }
 
